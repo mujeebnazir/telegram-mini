@@ -1,29 +1,37 @@
 "use client"
+import WebApp from '@twa-dev/sdk';
+WebApp.ready();
 import { ArrowRight } from "lucide-react";
 import { useEffect, useState } from "react";
-import  WebApp  from "@twa-dev/sdk";
 
 
-const LandingPage = () => {
-  const [user, setUser] = useState(null);
 
+interface UserData{
+  id:number;
+  firstName?:string;
+  lastName?:string;
+  username?:string;
+  photo_url?:string;
+}
+
+const Home = () => {
+  const [open, setOpen] = useState(false);
+  const [usertData,setUserData]=useState<UserData | null>(null);
   useEffect(() => {
-    if (typeof window !== "undefined" && WebApp.initDataUnsafe?.user) {
-      setUser(WebApp.initDataUnsafe.user);
+    // Check if WebApp SDK is available and only use it on the client side
+    if ( WebApp.initDataUnsafe.user) {
+      setUserData(WebApp.initDataUnsafe.user as UserData);
     }
   }, []);
-  
-
-  const [open, setOpen] = useState(false);
-
 
   return (
+    
     <div className="min-h-screen bg-gradient-to-br from-indigo-100 via-white to-purple-100">
       {/* Navigation */}
+    
       <nav className="px-6 py-4 flex items-center justify-between">
         <div className="text-2xl font-bold text-indigo-600">TelegramBot</div>
       </nav>
-
       {/* Hero Section */}
       <div className="max-w-6xl mx-auto px-6 py-24">
         <div className="text-center">
@@ -82,22 +90,22 @@ const LandingPage = () => {
                     Telegram User Data
                   </h1>
                   <p className="text-lg text-gray-600 mb-6">
-                    View and manage your Telegram user information: {user ? user.id : "No user data"}
+                    View and manage your Telegram user information: {usertData ? usertData.id : "No user data"}
                   </p>
 
                   {/* Dynamic User Data Section */}
-                  {user ? (
+                  {usertData ? (
                     <div className="space-y-4 text-left">
                       <div className="bg-gray-50 p-4 rounded-lg">
                         <h3 className="font-medium text-gray-900">User Information</h3>
                         <div className="mt-2 grid grid-cols-2 gap-4">
                           <div>
                             <p className="text-sm text-gray-500">Username</p>
-                            <p className="text-gray-900">{user.username || "N/A"}</p>
+                            <p className="text-gray-900">{usertData.username || "N/A"}</p>
                           </div>
                           <div>
                             <p className="text-sm text-gray-500">User ID</p>
-                            <p className="text-gray-900">{user.id}</p>
+                            <p className="text-gray-900">{usertData.id}</p>
                           </div>
                         </div>
                       </div>
@@ -135,4 +143,4 @@ const LandingPage = () => {
   );
 };
 
-export default LandingPage;
+export default Home;

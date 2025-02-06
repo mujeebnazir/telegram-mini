@@ -1,23 +1,7 @@
+//api/bot/route.js 
+
 import TelegramBot from 'node-telegram-bot-api';
-
-// Initialize bot outside the handler to maintain the connection
-const bot = new TelegramBot(process.env.TELEGRAM_BOT_TOKEN, {
-  webHook: {
-    port:  3000
-  }
-});
-
-// Configure the webhook URL in your environment
-const webhookUrl = process.env.WEBHOOK_URL; // e.g., 'https://your-domain.com/api/bot'
-
-// Set up webhook
-(async () => {
-  try {
-    await bot.setWebHook(`${webhookUrl}/webhook`);
-  } catch (error) {
-    console.error('Error setting webhook:', error);
-  }
-})();
+const bot = new TelegramBot(process.env.TELEGRAM_BOT_TOKEN, { polling: false});
 
 // Keyboard configuration
 const keyboard = {
@@ -31,6 +15,25 @@ const keyboard = {
     resize_keyboard: true
   }
 };
+
+// Function to set the webhook
+async function setWebhook() {
+  const webhookUrl = process.env.WEBHOOK_URL;
+  
+  try {
+    // First, delete any existing webhook
+    const deleteWebhookResponse = await bot.deleteWebHook();
+    console.log('Webhook deleted:', deleteWebhookResponse);
+
+    // Now, set the new webhook
+    const setWebhookResponse = await bot.setWebHook(`${webhookUrl}/webhook`);
+    console.log('Webhook set successfully:', setWebhookResponse);
+  } catch (error) {
+    console.error('Error handling webhook:', error);
+  }
+}
+
+setWebhook();
 
 export async function POST(req) {
   try {
